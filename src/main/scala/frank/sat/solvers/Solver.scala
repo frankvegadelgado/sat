@@ -5,7 +5,7 @@ import frank.sat._
 /**
   * Base trait for solvers.
   */
-trait Solver {
+trait Solver[T] {
 
   /**
     * Solve a formula.
@@ -13,7 +13,7 @@ trait Solver {
     * @param formula Formula to solve
     * @return Result
     */
-  def solve(formula: Formula): Result =
+  def solve(formula: Formula, param: Option[T] = None): Result =
     resolve(Step(formula))
 
   /**
