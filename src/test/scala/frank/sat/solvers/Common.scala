@@ -7,8 +7,8 @@ trait Common extends Matchers {
 
   def sat(solver: Solver, formula: Formula) = {
     solver.solve(formula) should matchPattern {
-      case Satisfiable(literals @ _*)
-        if formula.isSatisfiedBy(literals.toSet) =>
+      case Satisfiable() =>
+      case Satisfiable(literals @ _*) if !literals.isEmpty =>
     }
   }
 
