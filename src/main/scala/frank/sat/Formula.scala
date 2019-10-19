@@ -27,6 +27,16 @@ case class Formula(clauses: Clause*) {
   def isExactlyKSat(k: Int): Boolean =
     clauses forall (_.length == k)
 
+
+  /**
+    * Check if the formula is Monotone, i.e. is made up of clauses with
+    * all positive literals.
+    *
+    * @return True if the formula is Monotone, and false otherwise
+    */
+  def isMonotoneSat: Boolean =
+    clauses forall (_.literals.forall(_ >= 0))
+
   /**
     * Check whether a set of literals satisfies the formula.
     *
@@ -67,6 +77,14 @@ case class Formula(clauses: Clause*) {
     */
   def variableCount: Int =
     clauses.flatMap(_.variables).toSet.size
+
+  /**
+    * Unique variables in the formula.
+    *
+    * @return Unique variable count
+    */
+  def variables: Set[Int] =
+    clauses.flatMap(_.variables).toSet
 
   /**
     * Count clauses in the formula.

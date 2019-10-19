@@ -10,7 +10,7 @@ import frank.sat._
   *
   * The algorithm has polynomial running time.
   */
-object XORSolver extends Solver[Any] {
+object XORSolver extends Solver {
 
   /**
     * Solve a formula.
@@ -18,7 +18,7 @@ object XORSolver extends Solver[Any] {
     * @param formula Formula to solve
     * @return Result
     */
-  override def solve(formula: Formula, param: Option[Any] = None): Result =
+  override def solve(formula: Formula): Result =
     solverImpl(Step(formula))
 
   protected def solverImpl(input: Step): Result = {

@@ -9,7 +9,7 @@ import scala.util.control._
   *
   * The algorithm has polynomial running time.
   */
-object SCCSolver extends Solver[Any] {
+object SCCSolver extends Solver {
 
   protected def solverImpl(input: Step): Result = {
     require(input.formula.isExactlyKSat(2), "formula is not exactly 2-SAT")

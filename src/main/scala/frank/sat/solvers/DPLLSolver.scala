@@ -10,7 +10,7 @@ import frank.sat.{Result, Unsatisfiable}
   *
   * See: https://en.wikipedia.org/wiki/DPLL_algorithm
   */
-object DPLLSolver extends Solver[Any] {
+object DPLLSolver extends Solver {
 
   def solverImpl(input: Step): Result =
     branchAt(input, chooseLiteral(input.formula))
