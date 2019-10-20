@@ -16,10 +16,9 @@ object SCCSolver extends Solver {
 
     val graph = adjacencyList(implications(input.formula))
     val scc = tarjanSCC(graph)
-    val solution = input.solution ++ sccSolution(scc)
 
-    if (!isValid(solution)) Unsatisfiable
-    else Satisfiable(solution.toSeq: _*)
+    if (!isValid(scc)) Unsatisfiable
+    else Satisfiable()
   }
 
   private def implications(formula: Formula) =
@@ -98,12 +97,8 @@ object SCCSolver extends Solver {
     result
   }
 
-  private def isValid(solution: Set[Int]) =
-    solution.forall { literal => !solution.contains(-literal) }
+  private def isValid(solution: Seq[Set[Int]]) =
+    solution.forall(scc => scc forall {literal => !scc.contains(-literal)})
 
-  private def sccSolution(scc: Seq[Set[Int]]): Set[Int] =
-    scc.zipWithIndex.flatMap {
-      case (literals, i) if i % 2 == 0 => literals
-      case (literals, _) => literals map (-_)
-    }.toSet
+
 }
