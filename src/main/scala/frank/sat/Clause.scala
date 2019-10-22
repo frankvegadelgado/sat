@@ -10,6 +10,26 @@ package frank.sat
   */
 case class Clause(literals: Int*) {
 
+
+  /**
+    * Count the number of negative literals
+    * @return A number of negated variables
+    */
+  def negVarCount = literals.count(_ < 0)
+
+  /**
+    * Check whether the clause contains a literal
+    * @param literal A literal
+    * @return True if the verification is positive otherwise false
+    */
+  def contain(literal: Int) = literals contains(literal)
+
+  /**
+    * Extract a positive literal
+    * @return A literal
+    */
+  def posVar:Option[Int] = literals find (_ > 0)
+
   /**
     * Extract variables from the clause.
     *

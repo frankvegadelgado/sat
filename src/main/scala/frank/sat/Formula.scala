@@ -27,6 +27,15 @@ case class Formula(clauses: Clause*) {
   def isExactlyKSat(k: Int): Boolean =
     clauses forall (_.length == k)
 
+  /**
+    * Check if the formula has at most K positive literals for each clause
+    *
+    * @param k Maximum number of positive literals per clause
+    * @return True if the verification is positive, and false otherwise
+    */
+  def isExactlyKPosVar(k: Int): Boolean =
+  clauses forall (_.literals.count(_ > 0) <= k)
+
 
   /**
     * Check if the formula is Monotone, i.e. is made up of clauses with
