@@ -21,8 +21,8 @@ trait ConstantNodes{
 /**
   *
   */
-object ReductionComplex extends Reduction[ThreeSat, GraphDag] with ConstantNodes{
-  override def reduction(input: ThreeSat): GraphDag = {
+object ReductionComplex extends Reduction[FormulaSat, GraphDag] with ConstantNodes{
+  override def reduction(input: FormulaSat): GraphDag = {
 
     val m = input.formula.clauseCount
     val n = input.formula.variables.max
