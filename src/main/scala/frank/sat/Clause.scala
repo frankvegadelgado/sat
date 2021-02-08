@@ -12,6 +12,11 @@ case class Clause(literals: Int*) {
 
 
   /**
+    * Return true if the clause is a tautology
+    * @return
+    */
+  def isTautology = literals exists (it => contain(-it))
+  /**
     * Count the number of negative literals
     * @return A number of negated variables
     */

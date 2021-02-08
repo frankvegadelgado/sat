@@ -6,58 +6,108 @@ import frank.sat.{Clause, Formula}
   * Created by frank on 8/7/2019.
   * The reduction of a problem into another one using a certificate
   */
-trait Reduction[U<:Instance, V<:Instance, C] {
-  def reduction(input: U, certificate: Option[C] = None): V
+trait Reduction[U<:Instance, V<:Instance] {
+  def reduction(input: U): V
+}
+
+trait ConstantNodes{
+  val initial = DagNode(true, true, -1, 0, -1, 0)
+  val no = DagNode(false, false, -1, 0, -1, 0)
+  val yes = DagNode(false, true, -1, 0, -1, 0)
+
+
 }
 
 /**
-  * Theorem 6 in paper https://www.preprints.org/manuscript/201908.0037/v1
+  *
   */
-object ReductionKnownNPComplete extends Reduction[MonotoneNaeSat, MinXor2Sat, Any]{
-  override def reduction(input: MonotoneNaeSat, certificate: Option[Any] = None): MinXor2Sat = {
+object ReductionComplex extends Reduction[ThreeSat, GraphDag] with ConstantNodes{
+  override def reduction(input: ThreeSat): GraphDag = {
 
-    val clauses: Seq[List[Clause]] = for {(clause, index) <- input.formula.clauses.zipWithIndex
-                                     variable = input.formula.variables.max + 3*index} yield {
-      List(Clause(variable + 1, variable + 2),
-        Clause(variable + 1, variable + 3),
-        Clause(variable + 2, variable + 3),
-        Clause(variable + 1, clause.literals.zipWithIndex.find(_._2 == 0).get._1),
-        Clause(variable + 2, clause.literals.zipWithIndex.find(_._2 == 1).get._1),
-        Clause(variable + 3, clause.literals.zipWithIndex.find(_._2 == 2).get._1))
+    val m = input.formula.clauseCount
+    val n = input.formula.variables.max
+    val zippedClauses: Seq[(Clause, Int)]  = input.formula.clauses.zipWithIndex
+    val clausesMap: Map[Int, Clause] = zippedClauses.map(t => (t._2, t._1)).toMap
+    var nodes: Map[DagNode, Seq[DagNode]] = Map[DagNode, Seq[DagNode]]()
 
+    val next = initial.next(clausesMap, m, n)
+
+    var sequences: List[Seq[DagNode]] = List(next)
+
+    nodes = nodes + (initial -> next)
+
+    while(sequences.nonEmpty){
+      val current = sequences.head
+      sequences = sequences.tail
+      for(node <- current){
+        if (node.isFinalState){
+          if (!nodes.contains(node)) {
+            nodes = nodes + (node -> Seq())
+          }
+        } else if (!nodes.contains(node)) {
+            val nextStep = node.next(clausesMap, m, n)
+            nodes = nodes + (node -> nextStep)
+            sequences = sequences :+ nextStep
+          }
+        }
     }
-    MinXor2Sat(input.formula.clauseCount, Formula(clauses.flatten: _*))
+    GraphDag(nodes)
   }
 }
 
 /**
-  * Theorem 7 in paper https://www.preprints.org/manuscript/201908.0037/v1
+  *
   */
-object ReductionWithVerification extends Reduction[MinXor2Sat, MonotoneXor2Sat, Array[Int]]{
-  override def reduction(input: MinXor2Sat, certificate: Option[Array[Int]] = None): MonotoneXor2Sat = {
-    if (certificate.isEmpty) throw new IllegalArgumentException("The certificate is not valid")
-    val array: Array[Int] = certificate.get
-    // Output the value of m
-    val m = input.formula.clauseCount
-    val indexed = input.formula.clauses.zipWithIndex
-    var clauses: List[Clause] = Nil
-    var min = 1
-    var max = 0
-    for(i <- 1 to input.K + 1){
-      if (i == input.K + 1){
-        if (array.size >  input.K) throw new IllegalArgumentException("The certificate is not valid")
-        max = m + 1
-      } else if (array.size < i || array(i - 1) <= max || array(i - 1) < 1 || array(i - 1) > m ) {
-        throw new IllegalArgumentException("The certificate is not valid")
-      } else {
-        max = array(i - 1)
+object ReductionCount extends Reduction[GraphDag, AnswerCount] with ConstantNodes{
+
+  def hasNoIncomingEdge(node: DagNode, nodes: Map[DagNode, Seq[DagNode]]) =
+    nodes.values forall (!_.contains(node))
+
+  def topologicalSort(graph: Map[DagNode, Seq[DagNode]]):  List[DagNode] ={
+    var nodes: Map[DagNode, Seq[DagNode]] = graph.map(t => t)
+    var L: List[DagNode] = Nil
+    var S: Set[DagNode] = Set(initial)
+
+    while (S.nonEmpty) {
+      val node = S.head
+      S = S.tail
+      L = L :+ node
+      val edges = nodes(node)
+      nodes = nodes - node
+      for (m <- edges) {
+        if (hasNoIncomingEdge(m, nodes)) {
+          S = S + m
+        }
       }
-      for(j <- min to (max - 1)){
-        val c_j = indexed.find(p => p._2 == j - 1).get._1
-        clauses =  c_j::clauses
-      }
-      min = max + 1
     }
-    MonotoneXor2Sat(Formula(clauses: _*))
+    if (nodes.nonEmpty)
+      throw new Exception("There is a cycle in DAG")
+    else
+      L   //a topologically sorted order
+  }
+
+  override def reduction(input: GraphDag): AnswerCount = {
+    val nodes = input.nodes
+    var keys = nodes.keys.map(node => (node, 0.0)).toMap
+    keys = keys.updated(yes, 1)
+    val sort = topologicalSort(nodes)
+    val zippedClauses: Seq[(DagNode, Int)]  = sort.reverse.zipWithIndex
+    val nodesMap: Map[Int, DagNode] = zippedClauses.map(t => (t._2, t._1)).toMap
+    //println(s"$nodesMap")
+    val max = nodesMap.size - 1
+    for (i <- 0 to max) {
+      val node = nodesMap(i)
+      val edges = nodes.filter(t => t._2.contains(node)).keys
+      //println(s"$node  and  $edges")
+      for (m <- edges) {
+        if (keys(node) > 0) {
+          keys = keys.updated(m, keys(m) + keys(node))
+        }
+      }
+    }
+    //println(s"$keys")
+    val answer = keys(initial)/2.0
+    //println(s"answer: ${answer}")
+    AnswerCount(answer)
   }
 }

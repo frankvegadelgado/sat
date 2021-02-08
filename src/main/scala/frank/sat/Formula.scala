@@ -7,6 +7,23 @@ package frank.sat
   */
 case class Formula(clauses: Clause*) {
 
+
+  /**
+    * Return true if the variables are all from 1 to n
+    * @return
+    */
+  def isVariablesFromOneToN: Boolean ={
+    val setVar = variables
+    val n = setVar.max
+    val setRange = (1 to n).toSet
+    setVar.equals(setRange)
+  }
+
+  /**
+    * Return true if the formula does not contain a tautology clause
+    * @return
+    */
+  def freeTautology = clauses forall (!_.isTautology)
   /**
     * Check if the formula is K-SAT, i.e. is made up of clauses with
     * at most K literals.

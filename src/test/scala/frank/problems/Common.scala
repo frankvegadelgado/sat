@@ -11,21 +11,20 @@ import org.scalatest.Inside._
 
 trait Common extends Matchers {
 
-  def reduceSat(reducer: Reduction[MonotoneNaeSat, MinXor2Sat, Any], input: Formula) = {
-    reducer.reduction(MonotoneNaeSat(input)) should matchPattern {
-      case output:MinXor2Sat =>
+  def reduceComplex(reducer: Reduction[ThreeSat, GraphDag], input: Formula) = {
+    reducer.reduction(ThreeSat(input)) should matchPattern {
+      case output:GraphDag =>
     }
   }
 
-  def verifySat(verifier: Reduction[MinXor2Sat, MonotoneXor2Sat, Array[Int]], reducer: Reduction[MonotoneNaeSat, MinXor2Sat, Any], input: Formula, certificate: Array[Int]) = {
-    val value = verifier.reduction(reducer.reduction(MonotoneNaeSat(input)), Some(certificate))
+  def reduceCount(reducerComplex: Reduction[ThreeSat, GraphDag], reducerCount: Reduction[GraphDag, AnswerCount], input: Formula, left: Double, right: Double) = {
+    val value = reducerCount.reduction(reducerComplex.reduction(ThreeSat(input)))
     value should matchPattern {
-      case output: MonotoneXor2Sat =>
+      case output: AnswerCount =>
     }
     inside(value) {
-      case output: MonotoneXor2Sat => XORSolver.solve(output.formula) should matchPattern {
-        case Satisfiable() =>
-        case Satisfiable(literals@_*) if !literals.isEmpty =>
+      case output: AnswerCount => output should matchPattern {
+        case AnswerCount(value) if left <= value && value <= right =>
       }
     }
   }
