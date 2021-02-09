@@ -46,7 +46,7 @@ Compiling in Linux and Windows
 
 Install: Install JDK 8 and SBT 0.13
 
-To build and run the web interface:
+To build and run from command prompt:
 
 ```
 git clone https://github.com/frankvegadelgado/sat.git
@@ -55,7 +55,7 @@ sbt assembly
 cd bin
 ```
 
-After that copy the equivalent Dimacs **file.cnf** into the folder sat\bin\dimacs and next:
+After that, copy the equivalent Dimacs **file.cnf** into the folder sat\bin\dimacs and next:
 
 On Windows within sat\bin directory run
 
