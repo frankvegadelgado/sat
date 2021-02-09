@@ -9,7 +9,7 @@ Example
 
 Instance: P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
 
-Answer: For all possible the assignments the total sum value is 4:
+Answer: For all the possible assignments the total sum value is 4:
 
 |  x<sub>1</sub>    |  x<sub>2</sub>  |  x<sub>3</sub>   |      P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>)        |
 | ----------------- | ----------------| ---------------- | ---------------------------------------------------------- |
@@ -29,7 +29,7 @@ Solution to this problem
 
 Convert the polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i</sub>*x<sub>j</sub> make a clause (x<sub>i</sub> OR x<sub>j</sub>) and join all the summands by a disjunction with the AND operator.
 
-Conversion format (This project assumme the conversion is already done by the user, that's why this is project with a partial implementation)
+Conversion format (This project assume the conversion is already done by the user, that's why this is project with a partial implementation)
 -----
 
 The conversion is to a [DIMACS](http://www.satcompetition.org/2009/format-benchmarks2009.html) formula with the extension .cnf. 
