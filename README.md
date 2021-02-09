@@ -46,7 +46,7 @@ Compiling in Linux and Windows
 
 Install: Install JDK 8 and SBT 0.13
 
-To build and run from command prompt:
+To build and run from the command prompt:
 
 ```
 git clone https://github.com/frankvegadelgado/sat.git
