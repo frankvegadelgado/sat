@@ -2,14 +2,14 @@
 
 Instance: A polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) which is the sum of terms, where each term is a product of two distinct variables x<sub>j</sub>.
 
-Answer: Calculate for all possible assignment U<sub>i</sub> = {u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>} such that u<sub>j</sub> is in {0, 1}, the sum value of &sum;<sub>U<sub>i</sub></sub> P(u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>)
+Answer: Calculate for all the possible assignments U<sub>i</sub> = {u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>} such that u<sub>j</sub> is in {0, 1}, the total sum value of &sum;<sub>U<sub>i</sub></sub> P(u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>)
  
 Example
 ----- 
 
 Instance: P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
 
-Answer: For all possible assignment the sum value is 4:
+Answer: For all possible the assignments the total sum value is 4:
 
 |  x<sub>1</sub>    |  x<sub>2</sub>  |  x<sub>3</sub>   |      P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>)        |
 | ----------------- | ----------------| ---------------- | ---------------------------------------------------------- |
@@ -29,12 +29,12 @@ Solution to this problem
 
 Convert the polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i</sub>*x<sub>j</sub> make a clause (x<sub>i</sub> OR x<sub>j</sub>) and join all the summands by a disjunction with the AND operator.
 
-Conversion format
+Conversion format (This project assumme the conversion is already done by the user, that's why this is project with a partial implementation)
 -----
 
-[DIMACS](http://www.satcompetition.org/2009/format-benchmarks2009.html) formula with the extension .cnf. 
+The conversion is to a [DIMACS](http://www.satcompetition.org/2009/format-benchmarks2009.html) formula with the extension .cnf. 
   
-Let's take as the **file.cnf** our previous example: P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
+Let's take as the **file.cnf** from our previous example: P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
 ```  
 p cnf 3 2
 1 2 0
