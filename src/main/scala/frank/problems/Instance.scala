@@ -10,7 +10,7 @@ sealed trait Instance
 
 trait ConstantSat{
   val kSAT = 2
-  val isNonMonotone = true
+  val isNonMonotone = false
 }
 
 
