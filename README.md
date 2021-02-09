@@ -2,7 +2,7 @@
 
 Instance: A polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) which is the sum of terms, where each term is a product of two distinct variables x<sub>j</sub>.
 
-Answer: Calculate for all the possible assignments U<sub>i</sub> = {u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>} such that u<sub>j</sub> is in {0, 1}, the total sum value of &sum;<sub>U<sub>i</sub></sub> P(u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>)
+Answer: Calculate the total sum value of &sum;<sub>U<sub>i</sub></sub> P(u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>), for all the possible assignments U<sub>i</sub> = {u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>} such that u<sub>j</sub> is in {0, 1}.
  
 Example
 ----- 
