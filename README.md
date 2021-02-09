@@ -27,7 +27,7 @@ Answer: The total sum value is **4** for all the possible assignments:
 Solution to this problem
 -----
 
-Convert the polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i</sub>*x<sub>j</sub> make a clause (x<sub>i</sub> OR x<sub>j</sub>) and join all the summands by a disjunction with the AND operator.
+Convert the polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i</sub>*x<sub>j</sub>, we make a clause (x<sub>i</sub> OR x<sub>j</sub>) and join all the summands by a disjunction with the AND operator.
 
 Conversion format (This project assume the conversion is already done by the user, that's why this is project with a partial implementation)
 -----
