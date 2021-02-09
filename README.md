@@ -9,7 +9,7 @@ Example
 
 Instance: P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
 
-Answer: For all the possible assignments the total sum value is 4:
+Answer: The total sum value is **4** for all the possible assignments:
 
 |  x<sub>1</sub>    |  x<sub>2</sub>  |  x<sub>3</sub>   |      P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>)        |
 | ----------------- | ----------------| ---------------- | ---------------------------------------------------------- |
