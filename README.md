@@ -29,7 +29,7 @@ Solution to this problem
 
 Convert the polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i</sub>*x<sub>j</sub>, we make a clause (x<sub>i</sub> OR x<sub>j</sub>) and join all the summands by a disjunction with the AND operator.
 
-Conversion format (This project assume the conversion is already done by the user, that's why this is project with a partial implementation)
+Conversion format (In this project, we assume the conversion is already done by the user, that's why we receive as input only the formulas and consider this project as a "partial implementation"))
 -----
 
 The conversion is to a [DIMACS](http://www.satcompetition.org/2009/format-benchmarks2009.html) formula with the extension .cnf. 
@@ -40,6 +40,12 @@ p cnf 3 2
 1 2 0
 2 3 0  
 ```  
+
+- The first line **p cnf 3 2** means the polynomial P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) has 3 variables and 2 terms.
+
+- The second line **1 2 0** means the term x<sub>1</sub> * x<sub>2</sub> (Note also that the number *0* means the end of the term).
+
+- The third line **2 3 0** means the term x<sub>2</sub> * x<sub>3</sub> (Note also that the number *0* means the end of the term).
 
 Compiling in Linux and Windows
 -----
