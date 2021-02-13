@@ -24,7 +24,7 @@ Answer: The total sum value is **4** for all the possible assignments:
 
 **Total**: 2 + 1 + 1 + 0 + 0 + 0 + 0 + 0  = **4**.
 
-Solution to this problem
+Input of this project
 -----
 
 Convert the polynomial P(x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i</sub>*x<sub>j</sub>, we make a clause (x<sub>i</sub> OR x<sub>j</sub>) and join all the summands by a disjunction with the AND operator.
