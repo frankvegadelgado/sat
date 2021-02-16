@@ -11,7 +11,7 @@ Instance: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<
 
 Answer: The total sum value is **4** for all the possible assignments:
 
-|  x<sub>1</sub>    |  x<sub>2</sub>  |  x<sub>3</sub>   |      P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>)        |
+|  x<sub>1</sub>    |  x<sub>2</sub>  |  x<sub>3</sub>   |      P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>)        |
 | ----------------- | ----------------| ---------------- | ---------------------------------------------------------- |
 |         1         |         1       |          1       |        2                                                   |
 |         1         |         1       |          0       |        1                                                   |
@@ -41,7 +41,7 @@ p cnf 3 2
 2 3 0  
 ```  
 
-- The first line **p cnf 3 2** means the polynomial P(x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) has 3 variables and 2 terms.
+- The first line **p cnf 3 2** means the polynomial P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) has 3 variables and 2 terms.
 
 - The second line **1 2 0** means the term x<sub>1</sub> * x<sub>2</sub> (Note also that the number *0* means the end of the term).
 
@@ -110,7 +110,37 @@ java -jar "..\target\scala-2.12\sat.jar" --reduce dimacs 2
 
 We can change the directory *dimacs* and the value of **k** (in this example has the value of *2*).
 
+With the function neg(x)
+-----
 
+We could use the function **neg(x)** that returns 0 when x = 1 and vice versa.
+
+We can take our previous example: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = neg(x<sub>1</sub>) * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
+```  
+p cnf 3 2
+-1 2 0
+2 3 0  
+```  
+
+- The second line **-1 2 0** means the term neg(x<sub>1</sub>) * x<sub>2</sub> (Note that we put the negative value of *1* which means the evaluation in **neg(x<sub>1</sub>)**).
+
+With small coefficients 
+-----
+
+We could use small coefficients for our terms.
+
+We can take our previous example: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = 3 * x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
+```  
+p cnf 3 4
+1 2 0
+1 2 0
+1 2 0
+2 3 0  
+```  
+
+- The first line **p cnf 3 4** means the polynomial P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) has 3 variables and 4 terms not necessarily distinct.
+
+- The second, third and fourth line is **1 2 0** which means the term 3 * x<sub>1</sub> * x<sub>2</sub> (Note that we repeat the term 3 times which means the coefficient is 3).
 
 
 # Code
