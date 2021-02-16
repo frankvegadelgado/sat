@@ -2,16 +2,15 @@ package frank.problems
 
 import frank.sat.{Clause, Formula}
 
+import scala.collection.immutable.Map
+
 /**
   * Created by frank on 8/7/2019.
   * Instance of a problem
   */
 sealed trait Instance
 
-trait ConstantSat{
-  val kSAT = 2
-  val isNonMonotone = false
-}
+
 
 
 /**
@@ -20,11 +19,10 @@ trait ConstantSat{
   * Answer: Count the sum of weighted function
   * This problem is P.
   */
-case class FormulaSat(formula: Formula) extends Instance with ConstantSat{
+case class FormulaSat(formula: Formula, kSAT: Int) extends Instance{
   assert(formula.isExactlyKSat(kSAT), s"The formula should be in $kSAT-CNF")
   assert(formula.isVariablesFromOneToN, "In the formula, the variables should be all from 1 to n")
   assert(formula.freeTautology, "The formula should not contain tautology clauses")
-  assert(isNonMonotone || formula.isMonotoneSat, "All literals should be positive")
 
   def max = formula.variables.max
   def count = formula.clauseCount
@@ -45,8 +43,8 @@ case class DagNode(start: Boolean,
                    indexClause: Int,
                    currentCount: Int,
                    selectedClause: Int,
-                   literal: Int) extends ConstantSat{
-  def next(clauses: Map[Int, Clause], m: Int, n: Int): Seq[DagNode] = {
+                   literal: Int) {
+  def next(clauses: Map[Int, Clause], m: Int, n: Int, kSAT: Int): Seq[DagNode] = {
     this match {
       case DagNode(true, true, -1, 0, -1, 0) =>
         if (m != clauses.size) throw new Exception("Wrong number of clauses")

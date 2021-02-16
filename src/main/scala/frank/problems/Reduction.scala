@@ -2,6 +2,8 @@ package frank.problems
 
 import frank.sat.{Clause, Formula}
 
+import scala.collection.immutable.Map
+
 /**
   * Created by frank on 8/7/2019.
   * The reduction of a problem into another one using a certificate
@@ -26,11 +28,12 @@ object ReductionComplex extends Reduction[FormulaSat, GraphDag] with ConstantNod
 
     val m = input.formula.clauseCount
     val n = input.formula.variables.max
+    val kSat = input.kSAT
     val zippedClauses: Seq[(Clause, Int)]  = input.formula.clauses.zipWithIndex
     val clausesMap: Map[Int, Clause] = zippedClauses.map(t => (t._2, t._1)).toMap
     var nodes: Map[DagNode, Seq[DagNode]] = Map[DagNode, Seq[DagNode]]()
 
-    val next = initial.next(clausesMap, m, n)
+    val next = initial.next(clausesMap, m, n, kSat)
 
     var sequences: List[Seq[DagNode]] = List(next)
 
@@ -45,9 +48,12 @@ object ReductionComplex extends Reduction[FormulaSat, GraphDag] with ConstantNod
             nodes = nodes + (node -> Seq())
           }
         } else if (!nodes.contains(node)) {
-            val nextStep = node.next(clausesMap, m, n)
+            val nextStep = node.next(clausesMap, m, n, kSat)
             nodes = nodes + (node -> nextStep)
-            sequences = sequences :+ nextStep
+            val seq = nextStep.filterNot(nodes.contains(_))
+            if (seq.nonEmpty) {
+              sequences = sequences :+ seq
+            }
           }
         }
     }
@@ -60,11 +66,10 @@ object ReductionComplex extends Reduction[FormulaSat, GraphDag] with ConstantNod
   */
 object ReductionCount extends Reduction[GraphDag, AnswerCount] with ConstantNodes{
 
-  def hasNoIncomingEdge(node: DagNode, nodes: Map[DagNode, Seq[DagNode]]) =
-    nodes.values forall (!_.contains(node))
 
-  def topologicalSort(graph: Map[DagNode, Seq[DagNode]]):  List[DagNode] ={
-    var nodes: Map[DagNode, Seq[DagNode]] = graph.map(t => t)
+  def topologicalSort(graph: Map[DagNode, Seq[DagNode]], graphReverse: Map[DagNode, Seq[DagNode]]):  List[DagNode] ={
+    var nodes: Map[DagNode, Seq[DagNode]] = graph
+    var reverseNodes: Map[DagNode, Seq[DagNode]] = graphReverse
     var L: List[DagNode] = Nil
     var S: Set[DagNode] = Set(initial)
 
@@ -75,7 +80,8 @@ object ReductionCount extends Reduction[GraphDag, AnswerCount] with ConstantNode
       val edges = nodes(node)
       nodes = nodes - node
       for (m <- edges) {
-        if (hasNoIncomingEdge(m, nodes)) {
+        reverseNodes = reverseNodes.updated(m, reverseNodes(m).filterNot(_ == node))
+        if (reverseNodes(m).isEmpty) {
           S = S + m
         }
       }
@@ -86,18 +92,33 @@ object ReductionCount extends Reduction[GraphDag, AnswerCount] with ConstantNode
       L   //a topologically sorted order
   }
 
+  def reverse(graph: Map[DagNode, Seq[DagNode]]): Map[DagNode, Seq[DagNode]] = {
+    var result = Map[DagNode, Seq[DagNode]]()
+    val keys = graph.keys
+    for(node <- keys){
+      for(neighbor <- graph(node)){
+        if (!result.contains(neighbor)){
+          result = result + (neighbor -> Nil)
+        }
+        result = result.updated(neighbor, result(neighbor) :+ node)
+      }
+    }
+    result
+  }
+
   override def reduction(input: GraphDag): AnswerCount = {
     val nodes = input.nodes
     var keys = nodes.keys.map(node => (node, 0.0)).toMap
     keys = keys.updated(yes, 1)
-    val sort = topologicalSort(nodes)
+    val reverseNodes = reverse(nodes)
+    val sort = topologicalSort(nodes, reverseNodes)
     val zippedClauses: Seq[(DagNode, Int)]  = sort.reverse.zipWithIndex
     val nodesMap: Map[Int, DagNode] = zippedClauses.map(t => (t._2, t._1)).toMap
     //println(s"$nodesMap")
     val max = nodesMap.size - 1
     for (i <- 0 to max) {
       val node = nodesMap(i)
-      val edges = nodes.filter(t => t._2.contains(node)).keys
+      val edges = if (node == initial) Seq() else reverseNodes(node)
       //println(s"$node  and  $edges")
       for (m <- edges) {
         if (keys(node) > 0) {

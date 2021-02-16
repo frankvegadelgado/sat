@@ -25,7 +25,7 @@ object BatchApp {
                 |
                 |--------------------------------------------------------------------------------------------------
                 |                                         This is a Sat Solver
-                |                                       Problem: #CLAUSES-2UNSAT
+                |                                       Problem: #CLAUSES-KUNSAT
                 |                                      Author: Frank Vega Delgado
                 |                                       Created: June 19, 2020
                 |
@@ -46,6 +46,11 @@ object BatchApp {
                 |   2nd arg :
                 |
                 |           :    A valid directory path, such that the directory contains
+                |                the formulas in DIMACS format (with the file extension: '.cnf')
+                |
+                |   3rd arg :
+                |
+                |           :    The number of literals per clause in the
                 |                the formulas in DIMACS format (with the file extension: '.cnf')
                 |
                 | End Help
@@ -76,26 +81,26 @@ object BatchApp {
     getListOfFiles(dir).map(fileName => (fileName, readFormula(fileName)))
 
 
-  def createOutputs(dir: String, inputs: Seq[(String, Formula)]): Seq[String] = {
+  def createOutputs(dir: String, inputs: Seq[(String, Formula)], kSat: Int): Seq[String] = {
     for ((path, formula) <- inputs) yield {
       val file = new File(path)
       val fileName = file.getName
 
-      ReductionCount.reduction(ReductionComplex.reduction(FormulaSat(formula))) match {
+      ReductionCount.reduction(ReductionComplex.reduction(FormulaSat(formula, kSat))) match {
         case AnswerCount(value) => s"$fileName: $value"
       }
 
     }
   }
 
-  def reduce(dir: String): Unit = {
+  def reduce(dir: String, kSat: Int): Unit = {
     println("Starting....")
 
     println("RUNNING TASK")
     val startTime = System.currentTimeMillis()
 
     val formulas = readAllFormulas(dir)
-    val strings = createOutputs(dir, formulas)
+    val strings = createOutputs(dir, formulas, kSat)
 
     val endTime = System.currentTimeMillis()
     println("* EXECUTION TIME IN MILLISECONDS: " + (endTime - startTime))
@@ -111,14 +116,14 @@ object BatchApp {
 
   def run(args: Array[String]): Unit = {
 
-    val arguments = if (args.length != 2)
-      ("--help", "")
+    val arguments = if (args.length != 3)
+      ("--help", "", "")
     else
-      (args(0), args(1))
+      (args(0), args(1), args(2))
 
     arguments match {
-      case (another, _)  if another == "--help" || "--reduce" != another => printHelp()
-      case ("--reduce", dir) => reduce(dir)
+      case (another, _, _)  if another == "--help" || "--reduce" != another => printHelp()
+      case ("--reduce", dir, kSat) => reduce(dir, kSat.toInt)
 
     }
 
