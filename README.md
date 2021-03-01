@@ -1,51 +1,40 @@
-# Algebraic Polynomial Sum Solver Over {0, 1}
+# Hamiltonian Path
 
-Instance: A polynomial P(k, x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) which is the sum of terms, where each term is a product of k distinct variables x<sub>j</sub>.
+Instance: An undirected graph G = (V, E). A Hamiltonian path is a simple path (with no repeated nodes) such that this one contains all the vertices in V.
 
-Answer: Calculate the total sum value of &sum;<sub>U<sub>i</sub></sub> P(k, u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>), for all the possible assignments U<sub>i</sub> = {u<sub>1</sub>, u<sub>2</sub>, ... u<sub>n</sub>} such that u<sub>j</sub> is in {0, 1}.
+Question: Is there a Hamiltonian path in the graph G? 
+ 
+**Note: This problem is NP-complete.** 
  
 Example
 ----- 
 
-Instance: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
+Instance: An undirected graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
 
-Answer: The total sum value is **4** for all the possible assignments:
-
-|  x<sub>1</sub>    |  x<sub>2</sub>  |  x<sub>3</sub>   |      P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>)        |
-| ----------------- | ----------------| ---------------- | ---------------------------------------------------------- |
-|         1         |         1       |          1       |        2                                                   |
-|         1         |         1       |          0       |        1                                                   |
-|         0         |         1       |          1       |        1                                                   |
-|         0         |         0       |          0       |        0                                                   |
-|         1         |         0       |          1       |        0                                                   |
-|         0         |         0       |          1       |        0                                                   |
-|         1         |         0       |          0       |        0                                                   |
-|         0         |         1       |          0       |        0                                                   |
-
-**Total**: 2 + 1 + 1 + 0 + 0 + 0 + 0 + 0  = **4**.
+Answer: A Hamiltonian path is **1 - 2 - 3** 
 
 Input of this project
 -----
 
-Convert the polynomial P(k, x<sub>1</sub>, x<sub>2</sub>, ..., x<sub>n</sub>) into a MONOTONE-2SAT formula such that for each term x<sub>i_1</sub>* x<sub>i_2</sub> * ... * x<sub>i_k</sub> with k variables, we make a clause (x<sub>i_1</sub> OR x<sub>i_2</sub> OR ... OR x<sub>i_k</sub>) and join all the summands by a disjunction with the AND operator.
+We convert the set of edges E into a MONOTONE-2CNF formula such that for each edge (u, v) with the two vertices u and v, we make a clause (u OR v) and join all the clauses by a disjunction with the AND operator.
 
-Conversion format (In this project, we assume the conversion is already done by the user, that's why we receive as input only the formulas))
+Conversion format (In this project, we assume the conversion is already done by the user, that's why we receive as input only the formulas)
 -----
 
 The conversion is to a [DIMACS](http://www.satcompetition.org/2009/format-benchmarks2009.html) formula with the extension .cnf. 
   
-Let's take as the **file.cnf** from our previous example: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
+Let's take as the **file.cnf** from our previous example: The undirected graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
 ```  
 p cnf 3 2
 1 2 0
 2 3 0  
 ```  
 
-- The first line **p cnf 3 2** means the polynomial P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) has 3 variables and 2 terms.
+- The first line **p cnf 3 2** means the undirected graph G has 3 vertices and 2 edges.
 
-- The second line **1 2 0** means the term x<sub>1</sub> * x<sub>2</sub> (Note also that the number *0* means the end of the term).
+- The second line **1 2 0** means the edge (1, 2) (Note also that the number *0* means the end of the edge).
 
-- The third line **2 3 0** means the term x<sub>2</sub> * x<sub>3</sub> (Note also that the number *0* means the end of the term).
+- The third line **2 3 0** means the edge (2, 3) (Note also that the number *0* means the end of the edge).
 
 Compiling in Linux and Windows
 -----
@@ -76,13 +65,13 @@ chmod +x run.sh
 ./run.sh
 ```
 
-Finally, it would obtain in the console output (the answer 4 for **file.cnf**):
+Finally, it would obtain in the console output (the answer *true* for **file.cnf** which means this graph contains a Hamiltonian path):
 
 ```
 Starting....
 RUNNING TASK
-* EXECUTION TIME IN MILLISECONDS: 435
-file.cnf: 4.0
+* EXECUTION TIME IN MILLISECONDS: 477
+file.cnf: true
 Finished....
 ```
 
@@ -91,57 +80,13 @@ Finished....
 ```
 Starting....
 RUNNING TASK
-* EXECUTION TIME IN MILLISECONDS: 565
-formula1.cnf: 1.0
-formula2.cnf: 8.0
-formula3.cnf: 4.0
-formula4.cnf: 6.0
+* EXECUTION TIME IN MILLISECONDS: 513
+formula1.cnf: true
+formula2.cnf: false
+formula3.cnf: true
+formula4.cnf: false
 Finished....
 ```
-
-Changing the execution
------
-
-The run.bat has this code:
-
-```
-java -jar "..\target\scala-2.12\sat.jar" --reduce dimacs 2
-```
-
-We can change the directory *dimacs* and the value of **k** (in this example has the value of *2*).
-
-With the function neg(x)
------
-
-We could use the function **neg(x)** that returns 0 when x = 1 and vice versa.
-
-We can take our previous example: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = neg(x<sub>1</sub>) * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
-```  
-p cnf 3 2
--1 2 0
-2 3 0  
-```  
-
-- The second line **-1 2 0** means the term neg(x<sub>1</sub>) * x<sub>2</sub> (Note that we put the negative value of *1* which means the evaluation in **neg(x<sub>1</sub>)**).
-
-With small coefficients 
------
-
-We could use small coefficients for our terms.
-
-We can take our previous example: P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) = 3 * x<sub>1</sub> * x<sub>2</sub> + x<sub>2</sub> * x<sub>3</sub>
-```  
-p cnf 3 4
-1 2 0
-1 2 0
-1 2 0
-2 3 0  
-```  
-
-- The first line **p cnf 3 4** means the polynomial P(2, x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>) has 3 variables and 4 terms not necessarily distinct.
-
-- The second, third and fourth line is **1 2 0** which means the term 3 * x<sub>1</sub> * x<sub>2</sub> (Note that we repeat the term 3 times which means the coefficient is 3).
-
 
 # Code
 

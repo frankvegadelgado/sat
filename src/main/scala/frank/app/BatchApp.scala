@@ -7,7 +7,7 @@ import frank.sat._
 import frank.sat.parsers.DimacsFormula
 import java.io.File
 
-import frank.problems.{ReductionComplex, ReductionCount, FormulaSat, AnswerCount}
+import frank.problems.{ReductionComplexity, FormulaSat, AnswerCount}
 
 
 import scala.io.Source
@@ -40,18 +40,14 @@ object BatchApp {
                 |   --help   :   Print this help documentation
                 |
                 |
-                |   --reduce :   Computed the sum of every unsatisfied clauses
-                |                for all truth assignments in formulas MONOTONE-2SAT
+                |   --reduce :   Decide whether undirected graphs represented by
+                |                MONOTONE-2CNF formulas has a Hamiltonian path
                 |
                 |   2nd arg :
                 |
                 |           :    A valid directory path, such that the directory contains
                 |                the formulas in DIMACS format (with the file extension: '.cnf')
                 |
-                |   3rd arg :
-                |
-                |           :    The number of literals per clause in the
-                |                the formulas in DIMACS format (with the file extension: '.cnf')
                 |
                 | End Help
                 |--------------------------------------------------------------------------------------------------
@@ -81,26 +77,26 @@ object BatchApp {
     getListOfFiles(dir).map(fileName => (fileName, readFormula(fileName)))
 
 
-  def createOutputs(dir: String, inputs: Seq[(String, Formula)], kSat: Int): Seq[String] = {
+  def createOutputs(dir: String, inputs: Seq[(String, Formula)]): Seq[String] = {
     for ((path, formula) <- inputs) yield {
       val file = new File(path)
       val fileName = file.getName
 
-      ReductionCount.reduction(ReductionComplex.reduction(FormulaSat(formula, kSat))) match {
+      ReductionComplexity.reduction(FormulaSat(formula)) match {
         case AnswerCount(value) => s"$fileName: $value"
       }
 
     }
   }
 
-  def reduce(dir: String, kSat: Int): Unit = {
+  def reduce(dir: String): Unit = {
     println("Starting....")
 
     println("RUNNING TASK")
     val startTime = System.currentTimeMillis()
 
     val formulas = readAllFormulas(dir)
-    val strings = createOutputs(dir, formulas, kSat)
+    val strings = createOutputs(dir, formulas)
 
     val endTime = System.currentTimeMillis()
     println("* EXECUTION TIME IN MILLISECONDS: " + (endTime - startTime))
@@ -116,14 +112,14 @@ object BatchApp {
 
   def run(args: Array[String]): Unit = {
 
-    val arguments = if (args.length != 3)
-      ("--help", "", "")
+    val arguments = if (args.length != 2)
+      ("--help", "")
     else
-      (args(0), args(1), args(2))
+      (args(0), args(1))
 
     arguments match {
-      case (another, _, _)  if another == "--help" || "--reduce" != another => printHelp()
-      case ("--reduce", dir, kSat) => reduce(dir, kSat.toInt)
+      case (another, _)  if another == "--help" || "--reduce" != another => printHelp()
+      case ("--reduce", dir) => reduce(dir)
 
     }
 

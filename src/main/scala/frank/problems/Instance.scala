@@ -16,13 +16,12 @@ sealed trait Instance
 /**
   * A Boolean formula in 3CNF such that each clause can be false for some truth assignment
   * variables where all the variables must be represented by some number from 1 to n.
-  * Answer: Count the sum of weighted function
-  * This problem is P.
   */
-case class FormulaSat(formula: Formula, kSAT: Int) extends Instance{
-  assert(formula.isExactlyKSat(kSAT), s"The formula should be in $kSAT-CNF")
+case class FormulaSat(formula: Formula) extends Instance{
+  assert(formula.isExactlyKSat(2), s"The formula should be in 2-CNF")
   assert(formula.isVariablesFromOneToN, "In the formula, the variables should be all from 1 to n")
   assert(formula.freeTautology, "The formula should not contain tautology clauses")
+  assert(formula.isMonotoneSat, "The formula should not contain negated variables")
 
   def max = formula.variables.max
   def count = formula.clauseCount
@@ -33,37 +32,46 @@ case class FormulaSat(formula: Formula, kSAT: Int) extends Instance{
   * Dag Node
   * @param start
   * @param target
-  * @param indexClause
+  * @param source
   * @param currentCount
-  * @param selectedClause
-  * @param literal
+  * @param destination
+  * @param sum
   */
 case class DagNode(start: Boolean,
                    target: Boolean,
-                   indexClause: Int,
+                   source: Int,
+                   destination: Int,
                    currentCount: Int,
-                   selectedClause: Int,
-                   literal: Int) {
-  def next(clauses: Map[Int, Clause], m: Int, n: Int, kSAT: Int): Seq[DagNode] = {
+                   sum: Double) {
+  def next(clauses: Set[Clause], n: Int, scale: Int, Hm: Double): Seq[DagNode] = {
     this match {
       case DagNode(true, true, -1, 0, -1, 0) =>
-        if (m != clauses.size) throw new Exception("Wrong number of clauses")
-        else{
-          for(j<- 1 to m)
-            yield DagNode(true, false, m, 0, j, 0)
-        }
-      case DagNode(true, false, i, current, selected, lit) if  math.abs(lit) > n=>
-        Seq(DagNode(false, current == kSAT, -1, 0, -1, 0))
-      case DagNode(true, false, i, current, selected, lit) if  current > kSAT=>
+        for(j<- 1 to n)
+            yield DagNode(true, false, j, 0, 0, 0)
+      case DagNode(true, false, s, d, c, sm) if  sm > Hm=>
         Seq(DagNode(false, false, -1, 0, -1, 0))
-      case DagNode(true, false, i, current, selected, lit) if  math.abs(lit) <= n && i >= m =>
-        val abs = math.abs(lit)
-        Seq(DagNode(true, false, 0, current, selected, abs + 1),
-          DagNode(true, false, 0, current, selected, -(abs + 1)))
-      case DagNode(true, false, i, current, selected, lit) if  math.abs(lit) <= n && i < m =>
-       val newCurrent = if (clauses(i).contain(lit) && (i + 1) == selected) current + 1 else current
-        Seq(DagNode(true, false, i + 1, newCurrent, selected, lit))
-    }
+      case DagNode(true, false, s, d, c, sm) if  c == n=>
+        if (d == 0) {
+          val value = sm + BigDecimal(1.0 / s).setScale(scale, BigDecimal.RoundingMode.HALF_UP).toDouble
+          Seq(DagNode(false, value == Hm, -1, 0, -1, 0))
+        }
+        else{
+          Seq(DagNode(false, false, -1, 0, -1, 0))
+        }
+      case DagNode(true, false, s, d, c, sm) if  c < n=>
+        if (d == 0 && c == 0){
+          for(j<- 0 to n; if s != j)
+            yield DagNode(true, false, s, j, 1, 0)
+        }
+        else if (clauses.contains(Clause(s, d)) || clauses.contains(Clause(d, s))){
+          val value = sm + BigDecimal(1.0/s).setScale(scale, BigDecimal.RoundingMode.HALF_UP).toDouble
+          for(j<- 0 to n; if s != j && d != j)
+            yield DagNode(true, false, d, j, c + 1, value)
+        }
+        else{
+          Seq(DagNode(false, false, -1, 0, -1, 0))
+        }
+      }
   }
   def isInitialState = start && target
   def isFinalState = !start
@@ -83,8 +91,7 @@ case class GraphDag(nodes: Map[DagNode, Seq[DagNode]]) extends Instance{
 /**
   * The sum of weighted function in some SAT formula
   */
-case class AnswerCount(value: Double) extends Instance{
-  assert(value > 0, "Should be greater than 0")
+case class AnswerCount(value: Boolean) extends Instance{
 }
 
 

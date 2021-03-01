@@ -11,20 +11,32 @@ import org.scalatest.Inside._
 
 trait Common extends Matchers {
 
-  def reduceComplex(reducer: Reduction[FormulaSat, GraphDag], input: Formula, kSat: Int) = {
-    reducer.reduction(FormulaSat(input, kSat)) should matchPattern {
+  def reduceComplex(reducer: Reduction[FormulaSat, GraphDag], input: Formula) = {
+    reducer.reduction(FormulaSat(input)) should matchPattern {
       case output:GraphDag =>
     }
   }
 
-  def reduceCount(reducerComplex: Reduction[FormulaSat, GraphDag], reducerCount: Reduction[GraphDag, AnswerCount], input: Formula, left: Double, right: Double, kSat: Int) = {
-    val value = reducerCount.reduction(reducerComplex.reduction(FormulaSat(input, kSat)))
+  def reduceCount(reducerComplex: Reduction[FormulaSat, GraphDag], reducerCount: Reduction[GraphDag, AnswerCount], input: Formula, respond: Boolean) = {
+    val value = reducerCount.reduction(reducerComplex.reduction(FormulaSat(input)))
     value should matchPattern {
       case output: AnswerCount =>
     }
     inside(value) {
       case output: AnswerCount => output should matchPattern {
-        case AnswerCount(value) if left <= value && value <= right =>
+        case AnswerCount(value) if respond == value =>
+      }
+    }
+  }
+
+  def reduce(reducer: Reduction[FormulaSat, AnswerCount], input: Formula, respond: Boolean) = {
+    val value = reducer.reduction(FormulaSat(input))
+    value should matchPattern {
+      case output: AnswerCount =>
+    }
+    inside(value) {
+      case output: AnswerCount => output should matchPattern {
+        case AnswerCount(value) if respond == value =>
       }
     }
   }
