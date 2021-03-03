@@ -13,8 +13,8 @@ class ReductionCount$Test extends FlatSpec with Common {
 
   val formula1 = Formula(Clause(1, 2))
   val formula2 = Formula(Clause(1, 2), Clause(3, 4))
-  val formula3 = Formula(Clause(1, 2), Clause(2, 3))
-  val formula4 = Formula(Clause(1, 2), Clause(2, 3), Clause(4, 5), Clause(5, 6))
+  val formula3 = Formula(Clause(1, 2), Clause(3, 2), Clause(2, 3))
+  val formula4 = Formula(Clause(1, 2), Clause(3, 2))
   /*
   it should "reduce CNF formulas to DAG graph" in {
     reduceComplex(reducerComplex, formula1)
@@ -24,7 +24,7 @@ class ReductionCount$Test extends FlatSpec with Common {
 
   }
   */
-  it should "decide whether undirected graph has a Hamiltonian path" in {
+  it should "decide whether directed graph has a Hamiltonian path" in {
 
     reduce(reducer, formula1, true)
     reduce(reducer, formula2, false)

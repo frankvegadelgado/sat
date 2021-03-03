@@ -23,8 +23,8 @@ trait ConstantNodes{
 /**
   *
   */
-object ReductionComplexity extends Reduction[FormulaSat, AnswerCount] with ConstantNodes{
-  override def reduction(input: FormulaSat): AnswerCount = {
+object ReductionComplexity extends Reduction[FormulaSat, Answer] with ConstantNodes{
+  override def reduction(input: FormulaSat): Answer = {
 
     val n = input.formula.variables.max
     val clauses: Set[Clause] = input.formula.clauses.toSet
@@ -62,9 +62,9 @@ object ReductionComplexity extends Reduction[FormulaSat, AnswerCount] with Const
         }
     }
     if (!nodes.contains(yes)){
-      AnswerCount(false)
+      Answer(false)
     } else {
-      AnswerCount(true)
+      Answer(true)
     }
     //GraphDag(nodes)
   }

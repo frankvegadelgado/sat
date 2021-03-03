@@ -1,6 +1,6 @@
-# Hamiltonian Path
+# Directed Hamiltonian Path
 
-Instance: An undirected graph G = (V, E). A Hamiltonian path is a simple path (with no repeated nodes) such that this one contains all the vertices in V.
+Instance: A directed graph G = (V, E). A Hamiltonian path is a simple path (with no repeated nodes) such that this one contains all the vertices in V.
 
 Question: Is there a Hamiltonian path in the graph G? 
  
@@ -9,7 +9,7 @@ Question: Is there a Hamiltonian path in the graph G?
 Example
 ----- 
 
-Instance: An undirected graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
+Instance: A directed graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
 
 Answer: A Hamiltonian path is **1 - 2 - 3** 
 
@@ -23,14 +23,14 @@ Conversion format (In this project, we assume the conversion is already done by 
 
 The conversion is to a [DIMACS](http://www.satcompetition.org/2009/format-benchmarks2009.html) formula with the extension .cnf. 
   
-Let's take as the **file.cnf** from our previous example: The undirected graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
+Let's take as the **file.cnf** from our previous example: The directed graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
 ```  
 p cnf 3 2
 1 2 0
 2 3 0  
 ```  
 
-- The first line **p cnf 3 2** means the undirected graph G has 3 vertices and 2 edges.
+- The first line **p cnf 3 2** means the directed graph G has 3 vertices and 2 edges.
 
 - The second line **1 2 0** means the edge (1, 2) (Note also that the number *0* means the end of the edge).
 

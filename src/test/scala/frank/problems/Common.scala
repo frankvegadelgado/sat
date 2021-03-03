@@ -17,26 +17,26 @@ trait Common extends Matchers {
     }
   }
 
-  def reduceCount(reducerComplex: Reduction[FormulaSat, GraphDag], reducerCount: Reduction[GraphDag, AnswerCount], input: Formula, respond: Boolean) = {
+  def reduceCount(reducerComplex: Reduction[FormulaSat, GraphDag], reducerCount: Reduction[GraphDag, Answer], input: Formula, respond: Boolean) = {
     val value = reducerCount.reduction(reducerComplex.reduction(FormulaSat(input)))
     value should matchPattern {
-      case output: AnswerCount =>
+      case output: Answer =>
     }
     inside(value) {
-      case output: AnswerCount => output should matchPattern {
-        case AnswerCount(value) if respond == value =>
+      case output: Answer => output should matchPattern {
+        case Answer(value) if respond == value =>
       }
     }
   }
 
-  def reduce(reducer: Reduction[FormulaSat, AnswerCount], input: Formula, respond: Boolean) = {
+  def reduce(reducer: Reduction[FormulaSat, Answer], input: Formula, respond: Boolean) = {
     val value = reducer.reduction(FormulaSat(input))
     value should matchPattern {
-      case output: AnswerCount =>
+      case output: Answer =>
     }
     inside(value) {
-      case output: AnswerCount => output should matchPattern {
-        case AnswerCount(value) if respond == value =>
+      case output: Answer => output should matchPattern {
+        case Answer(value) if respond == value =>
       }
     }
   }

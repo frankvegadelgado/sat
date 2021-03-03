@@ -7,7 +7,7 @@ import frank.sat._
 import frank.sat.parsers.DimacsFormula
 import java.io.File
 
-import frank.problems.{ReductionComplexity, FormulaSat, AnswerCount}
+import frank.problems.{ReductionComplexity, FormulaSat, Answer}
 
 
 import scala.io.Source
@@ -40,7 +40,7 @@ object BatchApp {
                 |   --help   :   Print this help documentation
                 |
                 |
-                |   --reduce :   Decide whether undirected graphs represented by
+                |   --reduce :   Decide whether directed graphs represented by
                 |                MONOTONE-2CNF formulas has a Hamiltonian path
                 |
                 |   2nd arg :
@@ -83,7 +83,7 @@ object BatchApp {
       val fileName = file.getName
 
       ReductionComplexity.reduction(FormulaSat(formula)) match {
-        case AnswerCount(value) => s"$fileName: $value"
+        case Answer(value) => s"$fileName: $value"
       }
 
     }

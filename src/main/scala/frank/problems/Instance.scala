@@ -14,7 +14,7 @@ sealed trait Instance
 
 
 /**
-  * A Boolean formula in 3CNF such that each clause can be false for some truth assignment
+  * A Boolean formula in 2CNF such that each clause can be false for some truth assignment
   * variables where all the variables must be represented by some number from 1 to n.
   */
 case class FormulaSat(formula: Formula) extends Instance{
@@ -63,7 +63,7 @@ case class DagNode(start: Boolean,
           for(j<- 0 to n; if s != j)
             yield DagNode(true, false, s, j, 1, 0)
         }
-        else if (clauses.contains(Clause(s, d)) || clauses.contains(Clause(d, s))){
+        else if (clauses.contains(Clause(s, d))){
           val value = sm + BigDecimal(1.0/s).setScale(scale, BigDecimal.RoundingMode.HALF_UP).toDouble
           for(j<- 0 to n; if s != j && d != j)
             yield DagNode(true, false, d, j, c + 1, value)
@@ -91,7 +91,7 @@ case class GraphDag(nodes: Map[DagNode, Seq[DagNode]]) extends Instance{
 /**
   * The sum of weighted function in some SAT formula
   */
-case class AnswerCount(value: Boolean) extends Instance{
+case class Answer(value: Boolean) extends Instance{
 }
 
 
