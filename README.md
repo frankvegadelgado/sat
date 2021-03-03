@@ -1,8 +1,8 @@
 # Directed Hamiltonian Path
 
-Instance: A directed graph G = (V, E). A Hamiltonian path is a simple path (with no repeated nodes) such that this one contains all the vertices in V.
+Instance: A directed graph G = (V, E) of n vertices, such that each vertex is labeled with a unique integer from 1 to n. A Hamiltonian path is a simple path (with no repeated nodes) such that this one contains all the vertices in V.
 
-Question: Is there a Hamiltonian path in the graph G? 
+Question: Is there a Hamiltonian path from 1 to n in the graph G? 
  
 **Note: This problem is NP-complete.** 
  
@@ -11,7 +11,7 @@ Example
 
 Instance: A directed graph G = (V, E), where V = {1,2,3} and E = {(1, 2), (2, 3)}
 
-Answer: A Hamiltonian path is **1 - 2 - 3** 
+Answer: A Hamiltonian path from 1 to 3 is **1 -> 2 -> 3**
 
 Input of this project
 -----
@@ -65,7 +65,7 @@ chmod +x run.sh
 ./run.sh
 ```
 
-Finally, it would obtain in the console output (the answer *true* for **file.cnf** which means this graph contains a Hamiltonian path):
+Finally, it would obtain in the console output (the answer *true* for **file.cnf** which means this graph contains a Hamiltonian path from 1 to 3):
 
 ```
 Starting....

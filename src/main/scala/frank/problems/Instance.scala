@@ -46,12 +46,11 @@ case class DagNode(start: Boolean,
   def next(clauses: Set[Clause], n: Int, scale: Int, Hm: Double): Seq[DagNode] = {
     this match {
       case DagNode(true, true, -1, 0, -1, 0) =>
-        for(j<- 1 to n)
-            yield DagNode(true, false, j, 0, 0, 0)
+        Seq(DagNode(true, false, 1, 0, 0, 0))
       case DagNode(true, false, s, d, c, sm) if  sm > Hm=>
         Seq(DagNode(false, false, -1, 0, -1, 0))
       case DagNode(true, false, s, d, c, sm) if  c == n=>
-        if (d == 0) {
+        if (d == 0 && s == n) {
           val value = sm + BigDecimal(1.0 / s).setScale(scale, BigDecimal.RoundingMode.HALF_UP).toDouble
           Seq(DagNode(false, value == Hm, -1, 0, -1, 0))
         }
